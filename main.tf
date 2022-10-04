@@ -4,11 +4,12 @@
 # }
 
 locals {
-  cluster_domain      = "${var.cluster_id}.${var.base_domain}"
+  server_prefix       = "${var.server_prefix}"
+  cluster_domain      = "${var.base_domain}"
   bootstrap_fqdns     = ["bootstrap-0.${local.cluster_domain}"]
-  control_plane_fqdns = [for idx in range(var.control_plane_count) : "control-plane-${idx}.${local.cluster_domain}"]
-  compute_fqdns       = [for idx in range(var.compute_count) : "compute-${idx}.${local.cluster_domain}"]
-  storage_fqdns       = [for idx in range(var.storage_count) : "storage-${idx}.${local.cluster_domain}"]
+  control_plane_fqdns = [for idx in range(1, var.control_plane_count+1) : "${var.server_prefix}controlplane-${idx}.${local.cluster_domain}"]
+  compute_fqdns       = [for idx in range(1, var.compute_count+1) : "${var.server_prefix}worker-${idx}.${local.cluster_domain}"]
+  storage_fqdns       = [for idx in range(1, var.storage_count+1) : "${var.server_prefix}stg${idx}.${local.cluster_domain}"]
   ssh_public_key      = var.ssh_public_key == "" ? chomp(tls_private_key.installkey[0].public_key_openssh) : chomp(file(pathexpand(var.ssh_public_key)))
   folder_path         = var.vsphere_folder == "" ? var.cluster_id : var.vsphere_folder
   resource_pool_id    = var.vsphere_preexisting_resourcepool ? data.vsphere_resource_pool.resource_pool[0].id : vsphere_resource_pool.resource_pool[0].id
@@ -117,6 +118,7 @@ module "ignition" {
   airgapped           = var.airgapped
   proxy_config        = var.proxy_config
   trust_bundle        = var.openshift_additional_trust_bundle
+  okd_release         = var.okd_release
 }
 
 module "bootstrap" {

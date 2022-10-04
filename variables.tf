@@ -2,6 +2,11 @@
 // vSphere variables
 //////
 
+variable "okd_release" {
+  type        = string
+  description = "okd openshift-installer release number"
+}
+
 variable "vsphere_server" {
   type        = string
   description = "This is the vSphere server for the environment."
@@ -15,6 +20,7 @@ variable "vsphere_user" {
 variable "vsphere_password" {
   type        = string
   description = "vSphere server password"
+  sensitive    = true
 }
 
 variable "vsphere_cluster" {
@@ -69,6 +75,12 @@ variable "base_domain" {
   description = "The base DNS zone to add the sub zone to."
 }
 
+variable "server_prefix" {
+  type        = string
+  description = "hostname prefix with naming convention"
+  default     = ""
+}
+
 variable "machine_cidr" {
   type = string
 }
@@ -96,17 +108,17 @@ variable "control_plane_ip_addresses" {
 }
 variable "control_plane_memory" {
   type    = string
-  default = "16384"
+  default = "10240"
 }
 
 variable "control_plane_num_cpus" {
   type    = string
-  default = "4"
+  default = "8"
 }
 
 variable "control_plane_disk_size" {
   type    = number
-  default = 60
+  default = 50
 }
 
 //////////
@@ -116,7 +128,7 @@ variable "control_plane_disk_size" {
 
 variable "compute_count" {
   type    = string
-  default = "3"
+  default = "1"
 }
 
 variable "compute_ip_addresses" {
@@ -131,12 +143,12 @@ variable "compute_memory" {
 
 variable "compute_num_cpus" {
   type    = string
-  default = "4"
+  default = "8"
 }
 
 variable "compute_disk_size" {
   type    = number
-  default = 60
+  default = 50
 }
 
 //////////
@@ -184,12 +196,12 @@ variable "openshift_pull_secret" {
 
 variable "openshift_cluster_cidr" {
   type    = string
-  default = "10.128.0.0/14"
+  default = "10.42.0.0/18"
 }
 
 variable "openshift_service_cidr" {
   type    = string
-  default = "172.30.0.0/16"
+  default = "10.43.0.0/18"
 }
 
 variable "openshift_host_prefix" {
@@ -200,7 +212,7 @@ variable "openshift_host_prefix" {
 variable "openshift_version" {
   type        = string
   description = "Specify the OpenShift version you want to deploy.  Must be 4.6 or later to use this automation"
-  default     = "4.6.16"
+  default     = "4.10.3"
 }
 
 variable "create_openshift_vips" {
@@ -219,7 +231,7 @@ variable "ssh_public_key" {
 variable "vsphere_preexisting_folder" {
   type        = bool
   description = "If false, creates a top-level folder with the name from vsphere_folder_rel_path."
-  default     = false
+  default     = true
 }
 
 variable "vsphere_folder" {
@@ -247,7 +259,7 @@ variable "openshift_worker_mtu" {
 
 variable "openshift_ntp_server" {
   type    = string
-  default = ""
+  default = "" 
 }
 
 variable "proxy_config" {

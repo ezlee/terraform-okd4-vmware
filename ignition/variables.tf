@@ -1,3 +1,7 @@
+variable "okd_release" {
+  type = string
+}
+
 variable "base_domain" {
   type = string
 }
@@ -29,17 +33,17 @@ variable "control_plane_count" {
 
 variable "control_plane_memory" {
   type    = string
-  default = "16384"
+  default = "10240"
 }
 
 variable "control_plane_num_cpus" {
   type    = string
-  default = "4"
+  default = "8"
 }
 
 variable "control_plane_disk_size" {
   type    = number
-  default = 120
+  default = 50
 }
 
 variable "pull_secret" {
@@ -110,7 +114,7 @@ variable "default_interface" {
 
 variable "ntp_server" {
   type    = string
-  default = ""
+  default = "1.ca.pool.ntp.org"
 }
 
 variable "proxy_config" {

@@ -10,7 +10,7 @@ compute:
 - architecture: amd64
   hyperthreading: Enabled
   name: worker
-  replicas: 0
+  replicas: 1
 controlPlane:
   architecture: amd64
   hyperthreading: Enabled
@@ -67,7 +67,6 @@ ${indent(2, "additionalTrustBundle: |\n${file(var.trust_bundle)}")}
 EOF
 }
 
-
 data "template_file" "cluster_scheduler" {
   template = <<EOF
 apiVersion: config.openshift.io/v1
@@ -101,7 +100,6 @@ data "template_file" "post_deployment_06" {
     node_count = var.total_node_count
   })
 }
-
 
 data "template_file" "mtu_script" {
   template = templatefile("${path.module}/templates/30-mtu", {
@@ -217,6 +215,7 @@ EOF
 
 locals {
   installerdir = "${path.root}/installer/${var.cluster_id}"
+  okd_release  = "${var.okd_release}"
 }
 
 resource "null_resource" "download_binaries" {
@@ -225,7 +224,9 @@ resource "null_resource" "download_binaries" {
 set -ex
 test -e ${local.installerdir} || mkdir -p ${local.installerdir}
 if [[ $(uname -s) == "Darwin" ]]; then PLATFORM="mac"; else PLATFORM="linux"; fi
-curl -o ${local.installerdir}/openshift-installer.tar.gz https://mirror.openshift.com/pub/openshift-v4/x86_64/clients/ocp/${var.openshift_version}/openshift-install-$PLATFORM.tar.gz
+
+wget https://github.com/okd-project/okd/releases/download/${local.okd_release}/openshift-install-$PLATFORM-${local.okd_release}.tar.gz -P ${local.installerdir} -O ${local.installerdir}/openshift-installer.tar.gz
+
 tar -xf ${local.installerdir}/openshift-installer.tar.gz -C ${local.installerdir}
 EOF
   }
@@ -249,6 +250,8 @@ rm ${local.installerdir}/openshift/99_openshift-cluster-api_worker-machineset*
 cp ${path.module}/templates/99_01-post-deployment.yaml ${local.installerdir}/manifests
 cp ${path.module}/templates/99_02-post-deployment.yaml ${local.installerdir}/manifests
 cp ${path.module}/templates/99_03-post-deployment.yaml ${local.installerdir}/manifests
+cp ${path.module}/templates/99_07-post-deployment-master-timezone.yaml ${local.installerdir}/manifests
+cp ${path.module}/templates/99_08-post-deployment-worker-timezone.yaml ${local.installerdir}/manifests
 EOF
   }
   depends_on = [
@@ -325,7 +328,6 @@ resource "null_resource" "generate_ignition" {
     local_file.post_deployment_06
   ]
 }
-
 
 data "local_file" "bootstrap_ignition" {
   filename = "${local.installerdir}/bootstrap.ign"

@@ -1,30 +1,32 @@
-# OpenShift 4.6 UPI Deployment with Static IPs
+# Folk information
+**NOTE**: This is folked from https://github.com/ibm-cloud-architecture/terraform-openshift4-vmware/fork 
+**NOTE**: OKD 4.x has known update issue with openshift-apiserver cluster operator during provisioning, see [Issue](https://access.redhat.com/solutions/5896081), fix the issue during the provisioning when nodes are accessible via the sshkey. Otherwise, installation will timeout. Will add the fix with terrform vsphere_virtual_machine module.
 
-Deploy OpenShift 4.6 and later using static IP addresses for CoreOS nodes. The `ignition` module will inject code into the cluster that will automatically approve all node CSRs.  This runs only once at cluster creation.  You can delete the `ibm-post-deployment` namespace once your cluster is up and running.
+#  Tested OKD version 4.10 with VMWare UPI deployment with Static IPs
 
-**NOTE**: This requires OpenShift 4.6 or later to deploy, if you're looking for 4.5 or earlier, take a look at the `pre-4.6` [branch](https://github.com/ibm-cloud-architecture/terraform-openshift4-vmware/tree/pre-4.6)
+Deploy OKD 4.10 and later using static IP addresses for Fedora CoreOS nodes. The `ignition` module will inject code into the cluster that will automatically approve all node CSRs.  This runs only once at cluster creation.  You can delete the `ibm-post-deployment` namespace once your cluster is up and running.
 
 **NOTE**: Requires terraform 0.13 or later.
 
 ## Architecture
 
-OpenShift 4.6 User-Provided Infrastructure
+OKD 4.10 User-Provided Infrastructure
 
 ![topology](./media/topology.png)
 
 ## Prereqs
 
-1. [DNS](https://docs.openshift.com/container-platform/4.6/installing/installing_vsphere/installing-vsphere.html#installation-dns-user-infra_installing-vsphere) needs to be configured for external cluster access.
+1. [DNS](https://docs.okd.io/4.10/installing/installing_vsphere/preparing-to-install-on-vsphere.html) needs to be configured for external cluster access. No other DNS for nodes or internal api-int.apps.`cluster_id`.`base_domain` required.
     - api.`cluster_id`.`base_domain` points to `openshift_api_virtualip`
     - *.apps.`cluster_id`.`base_domain` points to `openshift_ingress_virtualip`
     - Point both of those DNS A or CNAME records to your LoadBalancers
-2. [CoreOS OVA](http://mirror.openshift.com/pub/openshift-v4/dependencies/rhcos/) must be uploaded to vCenter as a template.
+2. [Fedora CoreOS 35 OVA](https://getfedora.org/en/coreos/download?tab=cloud_launchable&stream=stable&arch=x86_64) must be uploaded to vCenter as a template.
 
 ## Installation Process
 
 ```bash
-git clone https://github.com/ibm-cloud-architecture/terraform-openshift4-vmware
-cd terraform-openshift4-vmware
+git clone https://github.com/ezlee/terraform-okd4-vmware
+cd terraform-okd4-vmware
 ```
 
 Update your `terraform.tfvars` with your environment values.  See sample `terraform.tfvars.example` file for details
