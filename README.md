@@ -1,4 +1,4 @@
-# Folk information
+# Fork information
 **NOTE**: This is folked from https://github.com/ibm-cloud-architecture/terraform-openshift4-vmware/fork 
 **NOTE**: OKD 4.x has known update issue with openshift-apiserver cluster operator during provisioning, see [Issue](https://access.redhat.com/solutions/5896081), fix the issue during the provisioning when nodes are accessible via the sshkey. Otherwise, installation will timeout. Will add the fix with terrform vsphere_virtual_machine module.
 
