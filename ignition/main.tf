@@ -302,7 +302,7 @@ resource "local_file" "mtu_configuration" {
 
 resource "local_file" "ntp_masters" {
   count    = var.ntp_server == "" ? 0 : 1
-  content  = data.template_file.mtu_machineconfig.rendered
+  content  = data.template_file.chrony_config_masters.rendered
   filename = "${local.installerdir}/manifests/99_master_ntp-machineconfig.yaml"
   depends_on = [
     null_resource.generate_manifests,
@@ -311,7 +311,7 @@ resource "local_file" "ntp_masters" {
 
 resource "local_file" "ntp_workers" {
   count    = var.ntp_server == "" ? 0 : 1
-  content  = data.template_file.mtu_machineconfig.rendered
+  content  = data.template_file.chrony_config_worker.rendered
   filename = "${local.installerdir}/manifests/99_worker_ntp-machineconfig.yaml"
   depends_on = [
     null_resource.generate_manifests,
